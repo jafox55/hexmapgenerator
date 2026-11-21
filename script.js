@@ -867,12 +867,12 @@ function renderBuildPanel() {
     const ringText = s.ring === 0 ? 'Center tile' : `Ring ${s.ring}`;
     const ringNote = s.ring > 0 && s.ringStart ? `Starting ring ${s.ring}, going clockwise. ` : '';
     panel.innerHTML = `
-      <p class="build-progress">Tile ${b.step + 1} of ${total} · ${ringText}</p>
+      <p class="build-progress">Step ${b.step + 1} of ${total} · Tile #${cell.tile.id} · ${ringText}</p>
       <progress max="${total}" value="${b.step + 1}" aria-hidden="true"></progress>
       <div class="build-instruction">
         <div class="build-swatch"></div>
         <div>
-          <p class="build-face">Take a tile from the <strong>${pile}</strong> pile, ${face} side up</p>
+          <p class="build-face">Take tile #${cell.tile.id} from the <strong>${pile}</strong> pile, ${face} side up</p>
         </div>
       </div>
       <p class="build-where">${ringNote}${where}</p>
@@ -883,7 +883,7 @@ function renderBuildPanel() {
       </div>
       <button type="button" class="link" data-action="exit">Exit Build mode</button>`;
     panel.querySelector('.build-swatch').append(terrainSwatch(face, 'swatch big'));
-    status.textContent = `Tile ${b.step + 1} of ${total}, ${ringText}. Take a tile from the ${pile} pile, ${face} side up. ` +
+    status.textContent = `Step ${b.step + 1} of ${total}, tile number ${cell.tile.id}, ${ringText}. Take it from the ${pile} pile, ${face} side up. ` +
       `${ringNote}${where}${marker ? ` This is the ${marker.label}.` : ''}`;
   }
 
