@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wayfarer Map Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <h1>Wayfarer Map Generator</h1>
+        <p class="lede">
+          For use with Wayfarer: The Journey Begins, a board game by B & J-Cubed
+          Games.
+        </p>
+      </header>
+
+      <section class="code-row" aria-label="Map code">
+        <div class="code-current">
+          <span class="code-label">Map Code:</span>
+          <strong id="map-code" class="code-value">…</strong>
+          <button id="copy-code" type="button">Copy</button>
+        </div>
+        <form id="code-form" class="code-form">
+          <label for="code-input" class="code-label">Load a Code:</label>
+          <div class="code-input-row">
+            <input
+              id="code-input"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              maxlength="12"
+              placeholder="K7Q2M9"
+            />
+            <button type="submit">Load</button>
+            <button
+              id="export-png"
+              type="button"
+              aria-label="Download map as PNG"
+            >
+              PNG
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+              >
+                <path
+                  d="M12 3v12m0 0 5-5m-5 5-5-5M4 17v3h16v-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </form>
+        <p id="code-message" class="code-message" aria-live="polite"></p>
+        <p id="code-note" class="code-message"></p>
+      </section>
+
+      <section class="controls" aria-label="Map controls">
+        <label class="field">
+          <span># of Tiles</span>
+          <select id="tile-count">
+            <option value="80" selected>All 80</option>
+            <option value="60">60</option>
+            <option value="40">40</option>
+          </select>
+        </label>
+        <button id="generate" class="primary" type="button">
+          <span class="button-full">Generate Map</span>
+          <span class="button-short">Generate</span>
+        </button>
+        <button id="reroll-points" type="button">
+          <span class="button-full">Regenerate Start &amp; End Points</span>
+          <span class="button-short">Regen S &amp; E Points</span>
+        </button>
+        <button id="start-build" class="primary build-start" type="button">
+          <span class="button-full">Build This Map</span>
+          <span class="button-short">Build</span>
+        </button>
+      </section>
+
+      <p id="summary" class="summary" aria-live="polite">Loading tiles…</p>
+
+      <figure class="map-frame">
+        <svg id="map" role="img" aria-label="Generated hex map"></svg>
+      </figure>
+
+      <section
+        id="build-panel"
+        class="build-panel"
+        aria-label="Build mode"
+        hidden
+      ></section>
+      <p id="build-status" class="visually-hidden" aria-live="polite"></p>
+
+      <section id="tile-info" class="tile-info" aria-live="polite">
+        <p class="hint">
+          Click on a tile to see information about it, or to flip it.
+        </p>
+      </section>
+
+      <section class="legend-block" aria-label="Terrain counts">
+        <h2>Terrain on this map</h2>
+        <ul id="legend" class="legend"></ul>
+        <p class="legend-note">
+          <span id="key-start"></span> start point
+          <span class="legend-divider" aria-hidden="true">|</span>
+          <span id="key-end"></span> end point
+        </p>
+      </section>
+
+      <details class="rules">
+        <summary>How to build the map</summary>
+        <ol>
+          <li>
+            <strong>Pick a map.</strong> Tap Generate map, or type a code into
+            Load a code. Share the map code so others can follow along on their
+            own phones.
+          </li>
+          <li>
+            <strong>Sort the tiles.</strong> Make one pile for each pair of
+            terrains, such as Plains / Mountains. Tiles in the same pile are
+            interchangeable.
+          </li>
+          <li>
+            <strong>Start Build mode.</strong> Tap Build this map at the table.
+            If the map uses fewer than 80 tiles, pull the tiles it lists from
+            each pile.
+          </li>
+          <li>
+            <strong>Line up your phone with the table.</strong> Tiles point up
+            and icons sit upright, the same as on screen.
+          </li>
+          <li>
+            <strong>Place the center tile</strong> in the middle of your play
+            area.
+          </li>
+          <li>
+            <strong>Follow each step.</strong> Take a tile from the pile it
+            names, turn the named side up, and place it where the step says:
+            next to the last tile, or next to the tile outlined on the map. The
+            map grows outward ring by ring, clockwise.
+          </li>
+          <li>
+            <strong>Add the pieces.</strong> When every tile is down, put your
+            meeple on the tile with the orange border (the start) and the end
+            token on the tile with the black border.
+          </li>
+        </ol>
+      </details>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
