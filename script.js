@@ -558,7 +558,7 @@ function renderMap() {
     minY = Math.min(minY, cy); maxY = Math.max(maxY, cy);
 
     const g = document.createElementNS(SVG_NS, 'g');
-    g.setAttribute('class', `hex${cell.fixed ? ' fixed' : ''}${state.selected === k ? ' selected' : ''}${buildClass(k)}`);
+    g.setAttribute('class', `hex${state.selected === k ? ' selected' : ''}${buildClass(k)}`);
     g.setAttribute('tabindex', '0');
     g.setAttribute('role', 'button');
     const marker = markerAt(k);

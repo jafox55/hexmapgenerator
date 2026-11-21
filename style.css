@@ -114,7 +114,6 @@ button:focus-visible, select:focus-visible {
 .hex { cursor: pointer; }
 .hex .fill { stroke: none; }
 .hex .edge { fill: none; stroke: var(--hex-stroke); stroke-width: 0.6; stroke-linejoin: round; pointer-events: none; }
-.hex.fixed .edge { stroke-dasharray: 1.6 1.2; stroke-width: 1; }
 .hex .halo { fill: none; stroke: #1b1a17; stroke-width: 2.1; stroke-linejoin: round; pointer-events: none; }
 .hex .highlight { fill: none; stroke: var(--highlight); stroke-width: 1.8; stroke-linejoin: round; pointer-events: none; }
 .hex .icon { pointer-events: none; }
