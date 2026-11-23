@@ -13,6 +13,7 @@ const HEX_DIRS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
 const key = (q, r) => `${q},${r}`;
 const faceOf = (cell) => (cell.showingA ? cell.tile.sideA : cell.tile.sideB);
 const backOf = (cell) => (cell.showingA ? cell.tile.sideB : cell.tile.sideA);
+const formatTileNumber = (id) => String(id).padStart(2, '0');
 
 // ---------- Generation ----------
 
@@ -756,7 +757,7 @@ function renderTileInfo() {
   const row = document.createElement('div');
   row.className = 'row';
   const text = document.createElement('p');
-  text.innerHTML = `<strong>Tile #${cell.tile.id}</strong>${marker ? ` (${marker.label})` : ''}: ${face} / ${back}`;
+  text.innerHTML = `<strong>Tile #${formatTileNumber(cell.tile.id)}</strong>${marker ? ` (${marker.label})` : ''}: ${face} / ${back}`;
   const flip = document.createElement('button');
   flip.type = 'button';
   flip.id = 'flip';
@@ -850,8 +851,8 @@ function renderBuildPanel() {
       <h2>Map built</h2>
       <p>All ${total} tiles are down. Put your meeple on the tile with the orange border and the end token on the tile with the black border.</p>
       <div class="build-nav">
-        <button type="button" data-action="back">Back</button>
-        <button type="button" class="primary" data-action="exit">Done</button>
+        <button type="button" data-action="back">${arrowIcon('left')}Back</button>
+        <button type="button" class="primary" data-action="exit">Done<kbd class="button-keycap" aria-hidden="true">Enter</kbd></button>
       </div>`;
     status.textContent = `Map built. All ${total} tiles placed.`;
   } else {
@@ -867,23 +868,23 @@ function renderBuildPanel() {
     const ringText = s.ring === 0 ? 'Center tile' : `Ring ${s.ring}`;
     const ringNote = s.ring > 0 && s.ringStart ? `Starting ring ${s.ring}, going clockwise. ` : '';
     panel.innerHTML = `
-      <p class="build-progress">Step ${b.step + 1} of ${total} · Tile #${cell.tile.id} · ${ringText}</p>
+      <p class="build-progress">Step ${b.step + 1} of ${total} · Tile #${formatTileNumber(cell.tile.id)} · ${ringText}</p>
       <progress max="${total}" value="${b.step + 1}" aria-hidden="true"></progress>
       <div class="build-instruction">
         <div class="build-swatch"></div>
         <div>
-          <p class="build-face">Take tile #${cell.tile.id} from the <strong>${pile}</strong> pile, ${face} side up</p>
+          <p class="build-face">Take tile #${formatTileNumber(cell.tile.id)} from the <strong>${pile}</strong> pile, ${face} side up</p>
         </div>
       </div>
       <p class="build-where">${ringNote}${where}</p>
       ${marker ? `<p class="build-marker">${markerKey(marker)} This is the ${marker.label} (${marker.borderName} border).</p>` : ''}
       <div class="build-nav">
-        <button type="button" data-action="back"${b.step === 0 ? ' disabled' : ''}>Back</button>
-        <button type="button" class="primary" data-action="next">${last ? 'Finish' : 'Next tile'}</button>
+        <button type="button" data-action="back"${b.step === 0 ? ' disabled' : ''}>${arrowIcon('left')}Back</button>
+        <button type="button" class="primary" data-action="next">${last ? 'Finish' : 'Next tile'}${arrowIcon('right')}</button>
       </div>
       <button type="button" class="link" data-action="exit">Exit Build mode</button>`;
     panel.querySelector('.build-swatch').append(terrainSwatch(face, 'swatch big'));
-    status.textContent = `Step ${b.step + 1} of ${total}, tile number ${cell.tile.id}, ${ringText}. Take it from the ${pile} pile, ${face} side up. ` +
+    status.textContent = `Step ${b.step + 1} of ${total}, tile number ${formatTileNumber(cell.tile.id)}, ${ringText}. Take it from the ${pile} pile, ${face} side up. ` +
       `${ringNote}${where}${marker ? ` This is the ${marker.label}.` : ''}`;
   }
 
@@ -899,6 +900,13 @@ function exitBuild() {
   renderMap();
   renderBuildPanel();
   document.getElementById('start-build').focus();
+}
+
+function arrowIcon(direction) {
+  const path = direction === 'left'
+    ? 'M8 3 3 8l5 5M3 8h10'
+    : 'M8 3l5 5-5 5M13 8H3';
+  return `<svg class="button-arrow" aria-hidden="true" focusable="false" viewBox="0 0 16 16"><path d="${path}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 
 function onBuildPanelClick(event) {
@@ -1150,12 +1158,21 @@ async function init() {
     const res = await fetch('tiles.json');
     if (!res.ok) throw new Error(res.statusText);
     state.data = await res.json();
+  } catch (err) {
+    document.getElementById('summary').textContent =
+      'Could not load tiles.json. Open this page through a web server (for example, run "python -m http.server" in this folder) instead of opening the file directly.';
+    return;
+  }
+
+  try {
+    await Promise.all(
+      Object.values(state.data.terrains).map(({ icon }) => loadImage(icon)),
+    );
     buildIconDefs(state.data.terrains);
     document.getElementById('key-start').innerHTML = markerKey(MARKERS.start);
     document.getElementById('key-end').innerHTML = markerKey(MARKERS.end);
   } catch (err) {
-    document.getElementById('summary').textContent =
-      'Could not load tiles.json. Open this page through a web server (for example, run "python -m http.server" in this folder) instead of opening the file directly.';
+    document.getElementById('summary').textContent = `Could not load terrain icons: ${err.message}`;
     return;
   }
 
@@ -1179,6 +1196,15 @@ async function init() {
   // Arrow keys step through Build mode.
   document.addEventListener('keydown', (e) => {
     if (!state.build || e.target.closest('input, select, textarea')) return;
+    if (
+      e.key === 'Enter' &&
+      state.build.step >= state.build.steps.length &&
+      !e.target.closest('button, input, select, textarea, a, summary, [role="button"]')
+    ) {
+      e.preventDefault();
+      exitBuild();
+      return;
+    }
     if (e.key === 'ArrowRight') { e.preventDefault(); setBuildStep(state.build.step + 1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); setBuildStep(state.build.step - 1); }
   });

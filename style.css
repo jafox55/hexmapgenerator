@@ -279,7 +279,26 @@ body.building #map { max-height: 52vh; }
 .build-marker { margin-top: 4px !important; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
 .build-nav { display: flex; gap: 10px; margin-top: 12px; }
-.build-nav button { flex: 1; }
+.build-nav button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+.button-arrow {
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  flex: none;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+.button-keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font: 600 0.65rem/1 "Poppins", sans-serif;
+}
 .build-nav button:disabled { opacity: 0.45; cursor: default; }
 button.link {
   display: block;
